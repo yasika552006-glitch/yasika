@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Library Book Management</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
+    }
+
+    h1, h2 {
+      text-align: center;
+      color: #333;
+    }
+
+    form {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    input {
+      padding: 10px;
+      font-size: 16px;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #4285f4;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #3367d6;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: center;
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .status-issued {
+      color: red;
+    }
+
+    .status-available {
+      color: green;
+    }
+
+    .action-btn {
+      margin: 2px;
+    }
+
+    .delete-btn {
+      background-color: #e53935;
+    }
+
+    .delete-btn:hover {
+      background-color: #c62828;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Library Book Management</h1>
+
+    <form id="bookForm">
+      <input type="text" id="title" placeholder="Book Title" required />
+      <input type="text" id="author" placeholder="Author Name" required />
+      <button type="submit">Add Book</button>
+    </form>
+
+    <h2>Book List</h2>
+    <table id="bookTable">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Author</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Book rows will be inserted here -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    const bookForm = document.getElementById("bookForm");
+    const bookTable = document.getElementById("bookTable").querySelector("tbody");
+
+    let books = [];
+
+    bookForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const title = document.getElementById("title").value.trim();
+      const author = document.getElementById("author").value.trim();
+
+      if (title && author) {
+        const newBook = {
+          id: Date.now(),
+          title,
+          author,
+          isIssued: false
+        };
+
+        books.push(newBook);
+        renderBooks();
+        bookForm.reset();
+      }
+    });
+
+    function renderBooks() {
+      bookTable.innerHTML = "";
+
+      books.forEach((book) => {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+          <td>${book.title}</td>
+          <td>${book.author}</td>
+          <td class="${book.isIssued ? 'status-issued' : 'status-available'}">
+            ${book.isIssued ? 'Issued' : 'Available'}
+          </td>
+          <td>
+            <button class="action-btn" onclick="toggleIssue(${book.id})">
+              ${book.isIssued ? 'Return' : 'Issue'}
+            </button>
+            <button class="action-btn delete-btn" onclick="deleteBook(${book.id})">
+              Delete
+            </button>
+          </td>
+        `;
+
+        bookTable.appendChild(row);
+      });
+    }
+
+    function toggleIssue(bookId) {
+      books = books.map(book =>
+        book.id === bookId ? { ...book, isIssued: !book.isIssued } : book
+      );
+      renderBooks();
+    }
+
+    function deleteBook(bookId) {
+      books = books.filter(book => book.id !== bookId);
+      renderBooks();
+    }
+  </script>
+</body>
+</html>
